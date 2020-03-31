@@ -121,8 +121,3 @@ func resourcePagerDutyScheduleOverrideDelete(d *schema.ResourceData, meta interf
 
 	return nil
 }
-
-func resourcePagerDutyScheduleOverrideUpdate(d *schema.ResourceData, meta interface{}) error {
-
-	return nil
-}
