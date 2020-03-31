@@ -51,6 +51,7 @@ func Provider() terraform.ResourceProvider {
 			"pagerduty_user_notification_rule": resourcePagerDutyUserNotificationRule(),
 			"pagerduty_extension":              resourcePagerDutyExtension(),
 			"pagerduty_event_rule":             resourcePagerDutyEventRule(),
+			"pagerduty_schedule_override":      resourcePagerDutyScheduleOverride(),
 		},
 	}
 
