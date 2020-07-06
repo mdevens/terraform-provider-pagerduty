@@ -74,7 +74,7 @@ func resourcePagerDutyScheduleOverrideCreate(d *schema.ResourceData, meta interf
 
 		now := time.Now()
 
-		// Check if it is an override in the past, then just let it delete from the state
+		// Check if it is an override in the past, then just let it create
 		if end.Before(now) {
 			log.Printf("[INFO] You tried to create an old Override. Ignore API Response and label as created")
 			d.SetId(fmt.Sprintf("IGNORED_%d", rand.Int()))
