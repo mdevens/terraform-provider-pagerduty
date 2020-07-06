@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/heimweh/go-pagerduty/pagerduty"
@@ -66,6 +69,18 @@ func resourcePagerDutyScheduleOverrideCreate(d *schema.ResourceData, meta interf
 
 	newOverride, _, err := client.Schedules.CreateOverride(d.Get("schedule").(string), override)
 	if err != nil {
+		log.Printf("[ERROR] Error creating PagerDuty schedule override: %s, checking timeframe.", d.Id())
+		end, _ := time.Parse(time.RFC3339, d.Get("end").(string))
+
+		now := time.Now()
+
+		// Check if it is an override in the past, then just let it delete from the state
+		if end.Before(now) {
+			log.Printf("[INFO] You tried to create an old Override. Ignore API Response and label as created")
+			d.SetId(fmt.Sprintf("IGNORED_%d", rand.Int()))
+			return resourcePagerDutyScheduleOverrideRead(d, meta)
+		}
+
 		return err
 	}
 
@@ -96,7 +111,12 @@ func resourcePagerDutyScheduleOverrideRead(d *schema.ResourceData, meta interfac
 		}
 	}
 	if len(matchingOverrides) != 1 {
-		err := errors.New(fmt.Sprintf("Could not find override: %s", d.Get("ID").(string)))
+		if strings.HasPrefix(d.Id(), "IGNORED") {
+			log.Printf("[INFO] API couldn't find the override, but it was labeled as ignored, so, will ignore")
+			return nil
+		}
+
+		err := errors.New(fmt.Sprintf("Could not find override: %s", d.Id()))
 		return handleNotFoundError(err, d)
 	}
 
@@ -114,10 +134,21 @@ func resourcePagerDutyScheduleOverrideDelete(d *schema.ResourceData, meta interf
 
 	_, err := client.Schedules.DeleteOverride(d.Get("schedule").(string), d.Id())
 	if err != nil {
+		log.Printf("[ERROR] Error deleting PagerDuty schedule override: %s, going alternate route.", d.Id())
+		end, _ := time.Parse(time.RFC3339, d.Get("end").(string))
+
+		now := time.Now()
+
+		// Check if it is an override in the past, then just let it delete from the state
+		if end.Before(now) {
+			log.Printf("[INFO] Old Override. Ignore API Response and label as deleted")
+			d.SetId("")
+			return nil
+		}
+
 		return err
 	}
 
 	d.SetId("")
-
 	return nil
 }
