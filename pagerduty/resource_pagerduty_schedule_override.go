@@ -120,9 +120,45 @@ func resourcePagerDutyScheduleOverrideRead(d *schema.ResourceData, meta interfac
 		return handleNotFoundError(err, d)
 	}
 
+	// different layouts - making both available to the users
+	layout := "2006-01-02T15:04-07:00"
+	layoutPDY := "2006-01-02T15:04:00-07:00"
+	myLayout := layout
+
+	// If the times are actually the same, ignore syntax differences and return whats in config
+	if len(d.Get("start").(string)) == len(layoutPDY) {
+		myLayout = layoutPDY
+	} else {
+		myLayout = layout
+	}
+
+	configStartTime, err := time.Parse(myLayout, d.Get("start").(string))
+	if err != nil {
+		return err
+	}
+
+	if len(d.Get("end").(string)) == len(layoutPDY) {
+		myLayout = layoutPDY
+	} else {
+		myLayout = layout
+	}
+	configEndTime, err := time.Parse(myLayout, d.Get("end").(string))
+	if err != nil {
+		return err
+	}
+
+	apiStartTime, _ := time.Parse(layoutPDY, matchingOverrides[0].Start)
+	apiEndTime, _ := time.Parse(layoutPDY, matchingOverrides[0].End)
+
+	if !configStartTime.Equal(apiStartTime) {
+		d.Set("start", matchingOverrides[0].Start)
+	}
+
+	if !configEndTime.Equal(apiEndTime) {
+		d.Set("end", matchingOverrides[0].End)
+	}
+
 	d.Set("user", matchingOverrides[0].User.ID)
-	d.Set("start", matchingOverrides[0].Start)
-	d.Set("end", matchingOverrides[0].End)
 
 	return nil
 }
