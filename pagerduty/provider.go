@@ -35,6 +35,9 @@ func Provider() terraform.ResourceProvider {
 			"pagerduty_vendor":            dataSourcePagerDutyVendor(),
 			"pagerduty_extension_schema":  dataSourcePagerDutyExtensionSchema(),
 			"pagerduty_service":           dataSourcePagerDutyService(),
+			"pagerduty_business_service":  dataSourcePagerDutyBusinessService(),
+			"pagerduty_priority":          dataSourcePagerDutyPriority(),
+			"pagerduty_ruleset":           dataSourcePagerDutyRuleset(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -52,6 +55,10 @@ func Provider() terraform.ResourceProvider {
 			"pagerduty_extension":              resourcePagerDutyExtension(),
 			"pagerduty_event_rule":             resourcePagerDutyEventRule(),
 			"pagerduty_schedule_override":      resourcePagerDutyScheduleOverride(),
+			"pagerduty_ruleset":                resourcePagerDutyRuleset(),
+			"pagerduty_ruleset_rule":           resourcePagerDutyRulesetRule(),
+			"pagerduty_business_service":       resourcePagerDutyBusinessService(),
+			"pagerduty_service_dependency":     resourcePagerDutyServiceDependency(),
 		},
 	}
 
@@ -69,7 +76,7 @@ func Provider() terraform.ResourceProvider {
 }
 
 func isErrCode(err error, code int) bool {
-	if e, ok := err.(*pagerduty.Error); ok && e.ErrorResponse.StatusCode == code {
+	if e, ok := err.(*pagerduty.Error); ok && e.ErrorResponse.Response.StatusCode == code {
 		return true
 	}
 

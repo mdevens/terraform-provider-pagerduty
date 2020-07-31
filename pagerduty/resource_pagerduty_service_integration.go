@@ -28,6 +28,7 @@ func resourcePagerDutyServiceIntegration() *schema.Resource {
 			"service": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"type": {
 				Type:          schema.TypeString,
@@ -114,12 +115,23 @@ func resourcePagerDutyServiceIntegrationCreate(d *schema.ResourceData, meta inte
 
 	service := d.Get("service").(string)
 
-	serviceIntegration, _, err := client.Services.CreateIntegration(service, serviceIntegration)
-	if err != nil {
-		return err
-	}
+	retryErr := resource.Retry(1*time.Minute, func() *resource.RetryError {
+		if serviceIntegration, _, err := client.Services.CreateIntegration(service, serviceIntegration); err != nil {
+			if isErrCode(err, 400) {
+				time.Sleep(2 * time.Second)
+				return resource.RetryableError(err)
+			}
 
-	d.SetId(serviceIntegration.ID)
+			return resource.NonRetryableError(err)
+		} else if serviceIntegration != nil {
+			d.SetId(serviceIntegration.ID)
+		}
+		return nil
+	})
+
+	if retryErr != nil {
+		return retryErr
+	}
 
 	return resourcePagerDutyServiceIntegrationRead(d, meta)
 }
@@ -139,9 +151,11 @@ func resourcePagerDutyServiceIntegrationRead(d *schema.ResourceData, meta interf
 			log.Printf("[WARN] Service integration read error")
 			errResp := handleNotFoundError(err, d)
 			if errResp != nil {
-				log.Printf("[WARN] Returning retryable error")
+				time.Sleep(2 * time.Second)
 				return resource.RetryableError(errResp)
 			}
+
+			return nil
 		}
 
 		d.Set("name", serviceIntegration.Name)

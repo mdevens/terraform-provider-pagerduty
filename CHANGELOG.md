@@ -1,4 +1,75 @@
-## 1.6.0 (Unreleased)
+## 1.8.0 (Unreleased)
+## 1.7.4 (July 27, 2020)
+
+FEATURES:
+* `resource/resource_pagerduty_business_service` Add team to business_service resource ([#246](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/246))
+
+BUG FIXES:
+* `resource/resource_pagerduty_user` Docs -- fixed typo in user_roles info ([#248](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/248))
+* `resource/resource_pagerduty_user` Docs -- added time_zone field ([#256](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/256))
+
+
+
+IMPROVEMENTS:
+* `resource/resource_pagerduty_ruleset` Docs -- added example of Default Global Ruleset ([#239](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/239))
+* `resource/resource_pagerduty_escalation_policy` Docs -- extending example of multiple targets([#242](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/242))
+* `resource/resource_pagerduty_service` Docs -- extending example of alert creation on service([#243](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/243))
+* `resource/resource_pagerduty_service_integration` Docs -- extending example of events v2 and email integrations on service_integration([#244](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/244))
+* `resource/resource_pagerduty_scheduule` Allowing "Removal of Schedule Layers ([#257](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/257))
+* `resource/resource_pagerduty_scheduule`,`resource/resource_pagerduty_team_membership`, `resource/resource_pagerduty_team_user` adding retry logic to deleting schedule,team_membership and user ([#258](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/258))
+
+## 1.7.3 (June 12, 2020)
+FEATURES
+
+* Update service_dependency to support technical service dependencies ([#238](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/238))
+* Implement retry logic on all reads ([#208](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/208))
+* Bump golang to v1.14.1 ([#193](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/193))
+
+BUG FIXES: 
+* data_source_ruleset: add example of Default Global Ruleset in Docs ([#239](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/239))
+
+## 1.7.2 (June 01, 2020)
+FEATURES
+* **New Data Source:** `pagerduty_ruleset`  ([#237](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/237))
+* Update docs/tests to TF 0.12 syntax ([#223](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/223))
+
+BUG FIXES: 
+* testing: udate sweepers ([#220](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/220))
+* data_source_priority: adding doc to sidebar nav ([#221](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/221))
+
+## 1.7.1 (April 29, 2020)
+FEATURES:
+* **New Data Source:** `pagerduty_priority`  ([#219](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/219))
+
+BUG FIXES:
+* resource_pagerduty_service: Fix panic  ([#218](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/218))
+
+## 1.7.0 (April 20, 2020)
+FEATURES:
+* **New Resources:** `pagerduty_business_service` and `pagerduty_service_dependency` ([#213](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/213))
+
+BUG FIXES:
+* resource_pagerduty_service_integration: Fix panic when reading ([#214](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/214))
+* resource_pagerduty_ruleset_rule: Fix Import of catch_all rules ([#205](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/205))
+* resource_pagerduty_ruleset_rule: Fixing mulit-rule creation bug and suppress rule panic ([#211](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/211))
+
+## 1.6.1 (April 09, 2020)
+BUG FIXES:
+* Added links to `pagerduty_ruleset` and `pagerduty_ruleset_rule` to side nav([#198](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/198))
+
+* Fixed importing on `pagerduty_ruleset` and `pagerduty_ruleset_rule` also added import testing. ([#199](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/199))
+
+## 1.6.0 (April 07, 2020)
+
+FEATURES:
+* **New Resources:** `pagerduty_ruleset` and `pagerduty_ruleset_rule` ([#195](https://github.com/terraform-providers/terraform-provider-pagerduty/issues/195))
+
+BUG FIXES:
+* resource/resource_pagerduty_team_membership: Docs: Fixed Team membership role defaults to manager ([#194](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/194))
+
+IMPROVEMENTS:
+* `resource/resource_pagerduty_service` and `resource/resource_pagerduty_service_integration`:mplement retry logic on read([#191](https://github.com/terraform-providers/terraform-provider-pagerduty/pull/191))
+
 ## 1.5.1 (March 19, 2020)
 
 FEATURES:
