@@ -219,6 +219,9 @@ github.com/posener/complete
 github.com/posener/complete/cmd
 github.com/posener/complete/cmd/install
 github.com/posener/complete/match
+# github.com/relvacode/iso8601 v1.1.0
+## explicit
+github.com/relvacode/iso8601
 # github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
