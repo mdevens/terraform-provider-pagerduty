@@ -122,7 +122,7 @@ func resourcePagerDutyScheduleOverrideRead(d *schema.ResourceData, meta interfac
 
 	// different layouts - making both available to the users
 	layout := "2006-01-02T15:04-07:00"
-	layoutPDY := "2006-01-02T15:04:00-07:00"
+	layoutPDY := "2006-01-02T15:04:05-07:00"
 	myLayout := layout
 
 	// If the times are actually the same, ignore syntax differences and return whats in config
