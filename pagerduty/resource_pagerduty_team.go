@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/heimweh/go-pagerduty/pagerduty"
+	"github.com/mdevens/go-pagerduty/pagerduty"
 )
 
 func resourcePagerDutyTeam() *schema.Resource {
@@ -72,14 +72,22 @@ func resourcePagerDutyTeamRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[INFO] Reading PagerDuty team %s", d.Id())
 
 	return resource.Retry(30*time.Second, func() *resource.RetryError {
-		if team, _, err := client.Teams.Get(d.Id()); err != nil {
+		if team, response, err := client.Teams.Get(d.Id()); err != nil {
+			// If its '404', it is now missing in PagerDuty so mark it as deleted
+			if response != nil && response.Response.StatusCode == 404 {
+				d.SetId("")
+				return nil
+			}
+
 			time.Sleep(2 * time.Second)
+
 			return resource.RetryableError(err)
 		} else if team != nil {
 			d.Set("name", team.Name)
 			d.Set("description", team.Description)
 			d.Set("html_url", team.HTMLURL)
 		}
+
 		return nil
 	})
 }

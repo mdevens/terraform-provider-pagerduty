@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/heimweh/go-pagerduty/pagerduty"
+	"github.com/mdevens/go-pagerduty/pagerduty"
 	"github.com/relvacode/iso8601"
 )
 
@@ -71,12 +71,12 @@ func resourcePagerDutyScheduleOverrideCreate(d *schema.ResourceData, meta interf
 	newOverride, _, err := client.Schedules.CreateOverride(d.Get("schedule").(string), override)
 	if err != nil {
 		log.Printf("[ERROR] Error creating PagerDuty schedule override: %s, checking timeframe.", d.Id())
-		end, _ := time.Parse(time.RFC3339, d.Get("end").(string))
+		configStartTime, err := iso8601.ParseString(d.Get("start").(string))
+		configEndTime, err := iso8601.ParseString(d.Get("end").(string))
 
 		now := time.Now()
 
-		// Check if it is an override in the past, then just let it create
-		if end.Before(now) {
+		if configEndTime.Before(now) || configStartTime.Before(now) {
 			log.Printf("[INFO] You tried to create an old Override. Ignore API Response and label as created")
 			d.SetId(fmt.Sprintf("IGNORED_%d", rand.Int()))
 			return resourcePagerDutyScheduleOverrideRead(d, meta)
@@ -121,11 +121,20 @@ func resourcePagerDutyScheduleOverrideRead(d *schema.ResourceData, meta interfac
 		return handleNotFoundError(err, d)
 	}
 
+	d.Set("user", matchingOverrides[0].User.ID)
+
 	// different layouts - making both available to the users
 	configStartTime, err := iso8601.ParseString(d.Get("start").(string))
 	configEndTime, err := iso8601.ParseString(d.Get("end").(string))
 	apiStartTime, _ := iso8601.ParseString(matchingOverrides[0].Start)
 	apiEndTime, _ := iso8601.ParseString(matchingOverrides[0].End)
+	now := time.Now()
+
+	// checking old overrides
+	if configEndTime.Before(now) || configStartTime.Before(now) {
+		log.Printf("[INFO] You tried to read an old Override, return as nothing happened and assume state is correct")
+		return nil
+	}
 
 	if !configStartTime.Equal(apiStartTime) {
 		d.Set("start", matchingOverrides[0].Start)
@@ -134,8 +143,6 @@ func resourcePagerDutyScheduleOverrideRead(d *schema.ResourceData, meta interfac
 	if !configEndTime.Equal(apiEndTime) {
 		d.Set("end", matchingOverrides[0].End)
 	}
-
-	d.Set("user", matchingOverrides[0].User.ID)
 
 	return nil
 }
